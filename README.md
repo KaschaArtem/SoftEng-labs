@@ -1,1 +1,1 @@
-# SoftEng-labs
+# All labs are located in their own branch

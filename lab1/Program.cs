@@ -82,6 +82,7 @@ class Program
                 result.Append(proteinSequence[i]);
             }
         }
+
         return result.ToString();
     }
 
@@ -95,7 +96,7 @@ class Program
             {
                 proteinName = tokens[0],
                 organismName = tokens[1],
-                proteinSequence = tokens[2]
+                proteinSequence = DecodeRLESequence(tokens[2])
             };
             sequences.Add(sequence);
         }
@@ -105,16 +106,20 @@ class Program
         {
             string[] tokens = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
             var command = new Command();
-            if (tokens[0] == "search" || tokens[0] == "mode")
+
+            command.commandName = tokens[0];
+            switch (command.commandName)
             {
-                command.commandName = tokens[0];
-                command.commandParameter1 = tokens[1];
-            }
-            else if (tokens[0] == "diff")
-            {
-                command.commandName = tokens[0];
-                command.commandParameter1 = tokens[1];
-                command.commandParameter2 = tokens[2];
+                case "search":
+                    command.commandParameter1 = DecodeRLESequence(tokens[1]);
+                    break;
+                case "diff": 
+                    command.commandParameter1 = tokens[1];
+                    command.commandParameter2 = tokens[2];
+                    break;
+                case "mode": 
+                    command.commandParameter1 = tokens[1];
+                    break;
             }
             commands.Add(command);
         }

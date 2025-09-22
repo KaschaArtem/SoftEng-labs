@@ -1,4 +1,6 @@
-﻿class Program
+﻿using System.Text;
+
+class Program
 {
     struct Sequence
     {
@@ -64,6 +66,25 @@
         return (sequencesFilePath, commandsFilePath);
     }
 
+    static string DecodeRLESequence(string proteinSequence)
+    {
+        var result = new StringBuilder();
+        for (int i = 0; i < proteinSequence.Length; i++)
+        {
+            if (char.IsDigit(proteinSequence[i]))
+            {
+                int num = proteinSequence[i] - '0';
+
+                result.Append(proteinSequence[i + 1], (num - 1));
+            } 
+            else
+            {
+                result.Append(proteinSequence[i]);
+            }
+        }
+        return result.ToString();
+    }
+
     static (List<Sequence> sequences, List<Command> commands) GetFilesContent((string sequencesFilePath, string commandsFilePath) filesPaths)
     {
         List<Sequence> sequences = new List<Sequence>();
@@ -84,10 +105,11 @@
         {
             string[] tokens = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
             var command = new Command();
-            if (tokens[0] == "search" || tokens[0] == "mode") {
+            if (tokens[0] == "search" || tokens[0] == "mode")
+            {
                 command.commandName = tokens[0];
                 command.commandParameter1 = tokens[1];
-            } 
+            }
             else if (tokens[0] == "diff")
             {
                 command.commandName = tokens[0];

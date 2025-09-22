@@ -1,5 +1,18 @@
 ﻿class Program
-{   
+{
+    struct Sequance
+    {
+        string proteinName;
+        string organismName;
+        string proteinSequance;
+    }
+
+    struct Command
+    {
+        string commandName;
+        string commandParameter1;
+        string commandParameter2;
+    }
 
     static (string sequencesFilePath, string commandsFilePath) GetFilesDirectories()
     {

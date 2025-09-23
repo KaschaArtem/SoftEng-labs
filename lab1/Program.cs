@@ -2,6 +2,7 @@
 
 class Program
 {
+    public static string contentPath = "";
     public static string filesID = "";
     public static int commandID = 1;
     public static StringBuilder fileOutput = new StringBuilder();
@@ -25,7 +26,7 @@ class Program
         string sequencesFilePath = "";
         string commandsFilePath = "";
 
-        string contentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\content");
+        contentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\content");
         string[] sequencesfiles = Directory.GetFiles(contentPath, "sequences*.txt");
 
         if (sequencesfiles.Length > 0)
@@ -135,9 +136,9 @@ class Program
     {
         switch(command.commandName)
         {
-            case "search": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\n"); break;
-            case "diff": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\t{command.commandParameter2}\n"); break;
-            case "mode": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\n"); break;
+            case "search": fileOutput.Append($"{commandID:D3}   {command.commandName}   {command.commandParameter1}\n"); break;
+            case "diff": fileOutput.Append($"{commandID:D3}   {command.commandName}   {command.commandParameter1}   {command.commandParameter2}\n"); break;
+            case "mode": fileOutput.Append($"{commandID:D3}   {command.commandName}   {command.commandParameter1}\n"); break;
         }
         commandID++;
     }
@@ -158,12 +159,12 @@ class Program
                     {
                         foreach (var sequence in matchesForProteinSequence)
                         {
-                            fileOutput.Append($"organism\t\t\tprotein\n{sequence.organismName}\t{sequence.proteinName}\n");
+                            fileOutput.Append($"organism\t\t\t\tprotein\n{sequence.organismName}\t\t{sequence.proteinName}\n");
                         }
                     }
                     else
                     {
-                        fileOutput.Append($"organism\t\t\tprotein\nNOT FOUND\n");
+                        fileOutput.Append($"organism\t\t\t\tprotein\nNOT FOUND\n");
                     }
 
                     break;
@@ -233,7 +234,7 @@ class Program
                             .ThenBy(pair => pair.Key)
                             .First();
 
-                        fileOutput.Append($"{result.Key}\t\t{result.Count}\n");
+                        fileOutput.Append($"{result.Key}          {result.Count}\n");
                     }
                     else
                     {
@@ -256,6 +257,7 @@ class Program
 
         ExecutionOfCommands(pairOfSequencesCommands);
 
-        Console.WriteLine(fileOutput);
+        File.WriteAllText(Path.Combine(contentPath, $"genedata{filesID}"), fileOutput.ToString());
+        Console.WriteLine("File Saved!");
     }
 }

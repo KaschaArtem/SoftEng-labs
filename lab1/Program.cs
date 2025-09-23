@@ -89,7 +89,7 @@ class Program
     static (List<Sequence> sequences, List<Command> commands) GetFilesContent((string sequencesFilePath, string commandsFilePath) filesPaths)
     {
         List<Sequence> sequences = new List<Sequence>();
-        foreach (string line in File.ReadLines(filesPaths.Item1))
+        foreach (string line in File.ReadLines(filesPaths.sequencesFilePath))
         {
             string[] tokens = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
             var sequence = new Sequence
@@ -102,7 +102,7 @@ class Program
         }
 
         List<Command> commands = new List<Command>();
-        foreach (string line in File.ReadLines(filesPaths.Item2))
+        foreach (string line in File.ReadLines(filesPaths.commandsFilePath))
         {
             string[] tokens = line.Split('\t', StringSplitOptions.RemoveEmptyEntries);
             var command = new Command();
@@ -127,19 +127,98 @@ class Program
         return (sequences, commands);
     }
 
+    static void ExecutionOfCommands((List<Sequence> sequences, List<Command> commands) pairOfSequencesCommands)
+    {
+        foreach (var command in pairOfSequencesCommands.commands)
+        {
+            switch (command.commandName)
+            {
+                case "search":
+
+                    var matchesForProteinSequence = pairOfSequencesCommands.sequences
+                        .Where(sequence => sequence.proteinSequence.Contains(command.commandParameter1));
+                    
+                    if (matchesForProteinSequence.Any())
+                    {
+                        foreach(var sequence in matchesForProteinSequence)
+                        {
+                            Console.WriteLine(command.commandName + " | " + command.commandParameter1 + " | " + sequence.proteinSequence);
+                        }
+                    } 
+                    else
+                    {
+                        Console.WriteLine(command.commandName + " | " + command.commandParameter1 + " | NOT FOUND");
+                    }
+
+                    break;
+                case "diff":
+
+                    var matchForFirstProteinName = pairOfSequencesCommands.sequences
+                        .FirstOrDefault(sequence => sequence.proteinName.Contains(command.commandParameter1));
+
+                    var matchForSecondProteinName = pairOfSequencesCommands.sequences
+                        .FirstOrDefault(sequence => sequence.proteinName.Contains(command.commandParameter2));
+
+                    if (matchForFirstProteinName.proteinName != null && matchForSecondProteinName.proteinName != null)
+                    {
+                        var longerSequence = matchForFirstProteinName;
+                        var shorterSequence = matchForSecondProteinName;
+                        if (longerSequence.proteinSequence.Length < matchForSecondProteinName.proteinSequence.Length)
+                        {
+                            longerSequence = matchForSecondProteinName;
+                            shorterSequence = matchForFirstProteinName;
+                        }
+
+                        int replaceAmount = 0;
+                        for (int i = 0; i < shorterSequence.proteinSequence.Length; i++)
+                        {
+                            if (shorterSequence.proteinSequence[i] != longerSequence.proteinSequence[i])
+                            {
+                                replaceAmount++;
+                            }
+                        }
+
+                        replaceAmount += (longerSequence.proteinSequence.Length - shorterSequence.proteinSequence.Length);
+
+                        Console.WriteLine(command.commandName + " | " + replaceAmount);
+                    }
+                    else
+                    {
+                        Console.WriteLine(command.commandName + " | NOT FOUND");
+                    }
+
+                    break;
+                case "mode":
+
+                    var matchForProteinName = pairOfSequencesCommands.sequences
+                        .FirstOrDefault(sequence => sequence.proteinName.Contains(command.commandParameter1));
+
+                    if (matchForProteinName.proteinName != null)
+                    {
+                        var result = matchForProteinName.proteinSequence
+                            .GroupBy(character => character)
+                            .Select(group => new { Key = group.Key, Count = group.Count() })
+                            .OrderByDescending(pair => pair.Count)
+                            .ThenBy(pair => pair.Key)
+                            .First();
+
+                        Console.WriteLine(command.commandName + " | " + matchForProteinName.proteinName + " | " + result.Key + " | " + result.Count);
+                    }
+                    else
+                    {
+                        Console.WriteLine(command.commandName + " | MISSING");
+                    }
+
+                    break;
+            }
+        }
+    }
+
     static void Main(string[] args)
     {
         var filesPaths = GetFilesDirectories();
         var pairOfSequencesCommands = GetFilesContent(filesPaths);
 
-        foreach (Sequence sequence in pairOfSequencesCommands.Item1)
-        {
-            Console.WriteLine(sequence.proteinName + " | " + sequence.organismName + " | " + sequence.proteinSequence);
-        }
-
-        foreach (Command command in pairOfSequencesCommands.Item2)
-        {
-            Console.WriteLine(command.commandName + " | " + command.commandParameter1 + " | " + command.commandParameter2);
-        }
+        ExecutionOfCommands(pairOfSequencesCommands);
     }
 }

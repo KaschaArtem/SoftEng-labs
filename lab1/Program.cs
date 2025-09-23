@@ -2,6 +2,10 @@
 
 class Program
 {
+    public static string filesID = "";
+    public static int commandID = 1;
+    public static StringBuilder fileOutput = new StringBuilder();
+
     struct Sequence
     {
         public string proteinName;
@@ -48,7 +52,7 @@ class Program
             }
 
             sequencesFilePath = sequencesfiles[fileChoise - 1];
-            string filesID = Path.GetFileName(sequencesFilePath).Substring("sequences".Length);
+            filesID = Path.GetFileName(sequencesFilePath).Substring("sequences".Length);
             commandsFilePath = Path.Combine(contentPath, "commands" + filesID);
 
             if (!File.Exists(commandsFilePath))
@@ -127,31 +131,45 @@ class Program
         return (sequences, commands);
     }
 
+    static void AddCommandID(Command command)
+    {
+        switch(command.commandName)
+        {
+            case "search": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\n"); break;
+            case "diff": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\t{command.commandParameter2}\n"); break;
+            case "mode": fileOutput.Append($"{commandID:D3}\t{command.commandName}\t{command.commandParameter1}\n"); break;
+        }
+        commandID++;
+    }
+
     static void ExecutionOfCommands((List<Sequence> sequences, List<Command> commands) pairOfSequencesCommands)
     {
         foreach (var command in pairOfSequencesCommands.commands)
         {
+            AddCommandID(command);
             switch (command.commandName)
             {
                 case "search":
 
                     var matchesForProteinSequence = pairOfSequencesCommands.sequences
                         .Where(sequence => sequence.proteinSequence.Contains(command.commandParameter1));
-                    
+
                     if (matchesForProteinSequence.Any())
                     {
-                        foreach(var sequence in matchesForProteinSequence)
+                        foreach (var sequence in matchesForProteinSequence)
                         {
-                            Console.WriteLine(command.commandName + " | " + command.commandParameter1 + " | " + sequence.proteinSequence);
+                            fileOutput.Append($"organism\t\t\tprotein\n{sequence.organismName}\t{sequence.proteinName}\n");
                         }
-                    } 
+                    }
                     else
                     {
-                        Console.WriteLine(command.commandName + " | " + command.commandParameter1 + " | NOT FOUND");
+                        fileOutput.Append($"organism\t\t\tprotein\nNOT FOUND\n");
                     }
 
                     break;
                 case "diff":
+
+                    fileOutput.Append("amino-acids difference:\n");
 
                     var matchForFirstProteinName = pairOfSequencesCommands.sequences
                         .FirstOrDefault(sequence => sequence.proteinName.Contains(command.commandParameter1));
@@ -180,15 +198,28 @@ class Program
 
                         replaceAmount += (longerSequence.proteinSequence.Length - shorterSequence.proteinSequence.Length);
 
-                        Console.WriteLine(command.commandName + " | " + replaceAmount);
+                        fileOutput.Append($"{replaceAmount}\n");
                     }
                     else
                     {
-                        Console.WriteLine(command.commandName + " | NOT FOUND");
+                        if (matchForFirstProteinName.proteinName == null)
+                        {
+                            fileOutput.Append($"MISSING:\t{matchForFirstProteinName.proteinName}\n");
+                        }
+                        else if (matchForSecondProteinName.proteinName == null)
+                        {
+                            fileOutput.Append($"MISSING:\t{matchForSecondProteinName.proteinName}\n");
+                        }
+                        else
+                        {
+                            fileOutput.Append($"MISSING:\t{matchForFirstProteinName.proteinName}\t{matchForSecondProteinName.proteinName}\n");
+                        }
                     }
 
                     break;
                 case "mode":
+
+                    fileOutput.Append("amino-acid occurs:\n");
 
                     var matchForProteinName = pairOfSequencesCommands.sequences
                         .FirstOrDefault(sequence => sequence.proteinName.Contains(command.commandParameter1));
@@ -202,15 +233,17 @@ class Program
                             .ThenBy(pair => pair.Key)
                             .First();
 
-                        Console.WriteLine(command.commandName + " | " + matchForProteinName.proteinName + " | " + result.Key + " | " + result.Count);
+                        fileOutput.Append($"{result.Key}\t\t{result.Count}\n");
                     }
                     else
                     {
-                        Console.WriteLine(command.commandName + " | MISSING");
+                        fileOutput.Append($"MISSING: {command.commandParameter1}");
                     }
 
                     break;
             }
+            fileOutput.Append('-', 74);
+            fileOutput.Append('\n');
         }
     }
 
@@ -219,6 +252,10 @@ class Program
         var filesPaths = GetFilesDirectories();
         var pairOfSequencesCommands = GetFilesContent(filesPaths);
 
+        fileOutput.Append("Kascha Artem\n" + "Genetic Searching\n" + new string('-', 74) + "\n");
+
         ExecutionOfCommands(pairOfSequencesCommands);
+
+        Console.WriteLine(fileOutput);
     }
 }

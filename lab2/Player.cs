@@ -23,7 +23,9 @@
 
         public void Move(int steps)
         {
-
+            location += steps;
+            if (location < 0) location += Game.size;
+            if (location > Game.size) location -= Game.size;
         }
     }
 }

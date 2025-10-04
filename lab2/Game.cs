@@ -21,6 +21,7 @@ namespace lab2
 
         public Game(int size)
         {
+            Game.size = size;
             cat = new Player("Cat");
             mouse = new Player("Mouse");
             state = GameState.Start;
@@ -28,24 +29,29 @@ namespace lab2
 
         public void Run()
         {
-            cat.state = State.Playing;
-            mouse.state = State.Playing;
-
             StringBuilder OutputContent = new StringBuilder();
             OutputContent.Append("Cat and Mouse\n\nCat Mouse  Distance\n-------------------\n");
-
+            
             foreach (string line in File.ReadLines(InputFile!))
             {
                 string[] tokens = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 switch(tokens[0])
                 {
                     case "C":
-
+                        DoMoveCommand(cat, int.Parse(tokens[1]));
+                        cat.state = State.Playing;
                         break;
                     case "M":
+                        DoMoveCommand(mouse, int.Parse(tokens[1]));
+                        mouse.state = State.Playing;
                         break;
                     case "P":
+                        if (cat.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", "??", mouse.location, ""); }
+                        else if (mouse.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", cat.location, "??", ""); }
+                        else { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", cat.location, mouse.location, GetDistance()); }
                         break;
+                    default:
+                        continue;
                 }
 
                 if (cat.location == mouse.location)

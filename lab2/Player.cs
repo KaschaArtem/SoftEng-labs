@@ -18,7 +18,7 @@
         public Player(string name) 
         {
             this.name = name;
-            this.location = -1;
+            this.location = 0;
         }
 
         public void Move(int steps)

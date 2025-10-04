@@ -46,9 +46,9 @@ namespace lab2
                         mouse.state = State.Playing;
                         break;
                     case "P":
-                        if (cat.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", "??", mouse.location, ""); }
-                        else if (mouse.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", cat.location, "??", ""); }
-                        else { OutputContent.AppendFormat("{0, 3}{1, 4}{2, 9}\n", cat.location, mouse.location, GetDistance()); }
+                        if (cat.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 6}{2, 10}\n", "??", mouse.location, ""); }
+                        else if (mouse.state != State.Playing) { OutputContent.AppendFormat("{0, 3}{1, 6}{2, 10}\n", cat.location, "??", ""); }
+                        else { OutputContent.AppendFormat("{0, 3}{1, 6}{2, 10}\n", cat.location, mouse.location, GetDistance()); }
                         break;
                     default:
                         continue;

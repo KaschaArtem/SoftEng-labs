@@ -26,9 +26,19 @@ namespace lab2
             return dataFiles[fileChoice - 1];
         }
 
+        static string SetOutputFilePath(string InputFile)
+        {
+            return Path.Combine(
+                   Path.GetDirectoryName(InputFile)!,
+                   Path.GetFileName(InputFile).Split('.')[0] + ".PursuitLog.txt"
+                   );
+        }
+
         static void Main(string[] args)
         {
             var InputFile = GetInputFilePath();
+            if (InputFile == null) return;
+            var OutputFile = SetOutputFilePath(InputFile);
         }
     }
 }

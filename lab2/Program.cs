@@ -1,1 +1,10 @@
-﻿Console.WriteLine("Hello, World!");
+﻿namespace lab2 
+{
+    class Program
+    {
+        static void main(string[] args)
+        {
+
+        }
+    }
+}

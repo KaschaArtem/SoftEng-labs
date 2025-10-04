@@ -65,7 +65,7 @@ namespace lab2
             if (cat.state == State.Playing) 
             {
                 cat.state = State.Looser;
-                cat.state = State.Winner;
+                mouse.state = State.Winner;
             }
 
             OutputContent.Append($"-------------------\n\n\nDistance traveled:   Mouse    Cat\n");

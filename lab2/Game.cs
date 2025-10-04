@@ -10,7 +10,7 @@ namespace lab2
 
     class Game
     {
-        public int size;
+        public static int size;
         public Player cat;
         public Player mouse;
         public GameState state;
@@ -20,7 +20,6 @@ namespace lab2
 
         public Game(int size)
         {
-            this.size = size;
             cat = new Player("Cat");
             mouse = new Player("Mouse");
             state = GameState.Start;

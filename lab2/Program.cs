@@ -1,10 +1,34 @@
-﻿namespace lab2 
+﻿using System.Dynamic;
+
+namespace lab2 
 {
     class Program
     {
-        static void main(string[] args)
+        static string? GetInputFilePath()
         {
+            string contentPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\content");
+            string[] dataFiles = Directory.GetFiles(contentPath, "*.ChaseData.txt");
 
+            if (!dataFiles.Any())
+            {
+                Console.WriteLine("No data files found!");
+                return null;
+            }
+
+            Console.WriteLine("Choose data file:");
+            for (int i = 0; i < dataFiles.Length; i++)
+                Console.WriteLine($"{i + 1}) {Path.GetFileNameWithoutExtension(dataFiles[i])}");
+
+            int fileChoice;
+            while (!int.TryParse(Console.ReadLine(), out fileChoice) || fileChoice < 1 || fileChoice > dataFiles.Length)
+                Console.WriteLine("Wrong input!");
+
+            return dataFiles[fileChoice - 1];
+        }
+
+        static void Main(string[] args)
+        {
+            var InputFile = GetInputFilePath();
         }
     }
 }

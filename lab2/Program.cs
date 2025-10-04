@@ -26,7 +26,7 @@ namespace lab2
             return dataFiles[fileChoice - 1];
         }
 
-        static string SetOutputFilePath(string InputFile)
+        static string GetOutputFilePath(string InputFile)
         {
             return Path.Combine(
                    Path.GetDirectoryName(InputFile)!,
@@ -38,7 +38,13 @@ namespace lab2
         {
             var InputFile = GetInputFilePath();
             if (InputFile == null) return;
-            var OutputFile = SetOutputFilePath(InputFile);
+            var OutputFile = GetOutputFilePath(InputFile);
+
+            Game.InputFile = InputFile;
+            Game.OutputFile = OutputFile;
+
+            Game game = new Game(int.Parse(File.ReadLines(Game.InputFile!).First()));
+            game.Run();
         }
     }
 }

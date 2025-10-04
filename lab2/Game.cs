@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace lab2
 {   
@@ -35,7 +36,17 @@ namespace lab2
 
             foreach (string line in File.ReadLines(InputFile!))
             {
+                string[] tokens = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                switch(tokens[0])
+                {
+                    case "C":
 
+                        break;
+                    case "M":
+                        break;
+                    case "P":
+                        break;
+                }
 
                 if (cat.location == mouse.location)
                 {

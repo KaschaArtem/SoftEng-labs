@@ -26,6 +26,7 @@
             location += steps;
             if (location < 0) location += Game.size;
             if (location > Game.size) location -= Game.size;
+            distanceTraveled += Math.Abs(steps);
         }
     }
 }

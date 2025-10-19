@@ -1,6 +1,8 @@
 ﻿namespace lab3
 {
-    internal class Punctuation
+    class Punctuation
     {
+        private string value { get; }
+        private int positionIndex { get; }
     }
 }

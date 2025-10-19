@@ -10,5 +10,13 @@ namespace lab3
         {
             this.sentences = sentences;
         }
+
+        public void Print()
+        {
+            foreach (var sentence in sentences)
+            {
+                sentence.Print();
+            }
+        }
     }
 }

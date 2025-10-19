@@ -20,5 +20,10 @@
             this.value = value;
             this.positionIndex = positionIndex;
         }
+
+        public void Print()
+        {
+            Console.Write(value);
+        }
     }
 }

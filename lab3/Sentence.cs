@@ -33,5 +33,30 @@ namespace lab3
             }
             return Type.Declarative;
         }
+
+        public void Print()
+        {
+            int currentWordIndex = 0;
+            int currentPunctuationIndex = 0;
+            for (int i = 0; i < words.Count + 1; i++)
+            {
+                bool isPrinted = false;
+                if (currentWordIndex < words.Count &&
+                    i == words[currentWordIndex].PositionIndex)
+                {
+                    words[currentWordIndex].Print();
+                    currentWordIndex++;
+                    isPrinted = true;
+                }
+                if (currentPunctuationIndex < punctuations.Count &&
+                    i == punctuations[currentPunctuationIndex].PositionIndex)
+                {
+                    punctuations[currentPunctuationIndex].Print();
+                    currentPunctuationIndex++;
+                    isPrinted = true;
+                }
+                if (isPrinted) { Console.Write(" "); }
+            }
+        }
     }
 }

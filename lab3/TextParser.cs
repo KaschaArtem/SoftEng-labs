@@ -34,10 +34,12 @@ namespace lab3
                         punctuations.Add(new Punctuation(punctuation, currentWordIndex));
 
                         if (punctuation[0] == '.' ||
-                        punctuation[0] == '?' ||
-                        punctuation[0] == '!')
+                            punctuation[0] == '?' ||
+                            punctuation[0] == '!')
                         {
                             sentences.Add(new Sentence(words, punctuations, punctuation[0]));
+                            words = new List<Word>();
+                            punctuations = new List<Punctuation>();
                             currentWordIndex = -1;
                         }
                     }

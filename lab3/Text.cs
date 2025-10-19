@@ -1,4 +1,6 @@
-﻿namespace lab3
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace lab3
 {
     class Text
     {

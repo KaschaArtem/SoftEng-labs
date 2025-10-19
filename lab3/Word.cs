@@ -3,9 +3,22 @@
     class Word
     {
         private string value { get; }
+        private int positionIndex { get; }
 
-        public Word(string value) {
+        public string Value
+        {
+            get { return value; }
+        }
+
+        public int PositionIndex
+        {
+            get { return positionIndex; }
+        }
+
+        public Word(string value, int positionIndex) 
+        {
             this.value = value;
+            this.positionIndex = positionIndex;
         }
     }
 }

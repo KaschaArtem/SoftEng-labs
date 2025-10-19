@@ -26,8 +26,13 @@
 
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             string? inputFilePath = GetTextFilePath();
             if (inputFilePath == null) { return; }
+
+            TextParser textParser = new TextParser();
+            Text text = textParser.ParseTextFile(inputFilePath);
         }
     }
 }

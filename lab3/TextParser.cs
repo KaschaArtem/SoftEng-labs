@@ -4,46 +4,51 @@ namespace lab3
 {
     class TextParser
     {
-        public Text ParseTextFile(string inputFilePath)
+        public Text ParseTextFile(string filePath)
         {
+            string content = File.ReadAllText(filePath);
+            content = Regex.Replace(content, @"\s+", " ").Trim();
+
+            MatchCollection sentenceMatches = Regex.Matches(content, @"[^.!?]+[.!?]+");
+
             List<Sentence> sentences = new List<Sentence>();
 
-            List<Word> words = new List<Word>();
-            List<Punctuation> punctuations = new List<Punctuation>();
-
-            foreach (string paragraph in File.ReadLines(inputFilePath))
+            foreach (Match match in sentenceMatches)
             {
-                string[] tokens = paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                int currentWordIndex = -1;
+                string sentenceText = match.Value.Trim();
 
-                foreach (string token in tokens)
+                List<Word> words = new List<Word>();
+                List<Punctuation> punctuations = new List<Punctuation>();
+
+                var tokens = Regex.Matches(sentenceText, @"([\p{L}\p{Nd}\-]+|[^\p{L}\p{Nd}\s]+)");
+
+                string lastToken = tokens[tokens.Count - 1].Value;
+                char firstChar = lastToken[0];
+                Type type = firstChar switch
                 {
-                    currentWordIndex++;
+                    '?' => Type.Interrogative,
+                    '!' => Type.Exclamatory,
+                    _ => Type.Declarative
+                };
 
-                    Match match = Regex.Match(token, @"^(\w+)?([^\w]*)$");
-                    string word = match.Groups[1].Value;
-                    string punctuation = match.Groups[2].Value;
+                int index = 0;
+                foreach (Match token in tokens)
+                {
+                    string value = token.Value;
 
-                    if (!string.IsNullOrEmpty(word))
+                    if (Regex.IsMatch(value, @"[\p{L}\p{Nd}]"))
                     {
-                        words.Add(new Word(word, currentWordIndex));
+                        words.Add(new Word(value, index));
+                    }
+                    else
+                    {
+                        punctuations.Add(new Punctuation(value, index));
                     }
 
-                    if (!string.IsNullOrEmpty(punctuation))
-                    {
-                        punctuations.Add(new Punctuation(punctuation, currentWordIndex));
-
-                        if (punctuation[0] == '.' ||
-                            punctuation[0] == '?' ||
-                            punctuation[0] == '!')
-                        {
-                            sentences.Add(new Sentence(words, punctuations, punctuation[0]));
-                            words = new List<Word>();
-                            punctuations = new List<Punctuation>();
-                            currentWordIndex = -1;
-                        }
-                    }
+                    index++;
                 }
+
+                sentences.Add(new Sentence(words, punctuations, type));
             }
 
             return new Text(sentences);

@@ -14,49 +14,40 @@ namespace lab3
         private List<Punctuation> punctuations { get; }
         private Type sentenceType { get; }
 
-        public Sentence(List<Word> words, List<Punctuation> punctuations, char endingPunctuation)
+        public Sentence(List<Word> words, List<Punctuation> punctuations, Type sentenceType)
         {
             this.words = words;
             this.punctuations = punctuations;
-            sentenceType = SetSentenceType(endingPunctuation);
-        }
-
-        private Type SetSentenceType(char endingPunctuation) {
-            switch (endingPunctuation)
-            {
-                case '.':
-                    return Type.Declarative;
-                case '?':
-                    return Type.Interrogative;
-                case '!':
-                    return Type.Exclamatory;
-            }
-            return Type.Declarative;
+            this.sentenceType = sentenceType;
         }
 
         public void Print()
         {
-            int currentWordIndex = 0;
-            int currentPunctuationIndex = 0;
-            for (int i = 0; i < words.Count + 1; i++)
+            int word = 0;
+            int punctuation = 0;
+            int maxIndex = Math.Max(
+                words.Count > 0 ? words[^1].PositionIndex : 0,
+                punctuations.Count > 0 ? punctuations[^1].PositionIndex : 0
+            );
+
+            for (int i = 0; i <= maxIndex; i++)
             {
-                bool isPrinted = false;
-                if (currentWordIndex < words.Count &&
-                    i == words[currentWordIndex].PositionIndex)
+                if (word < words.Count && words[word].PositionIndex == i)
                 {
-                    words[currentWordIndex].Print();
-                    currentWordIndex++;
-                    isPrinted = true;
+                    if (i > 0) Console.Write(" ");
+                    words[word].Print();
+                    word++;
                 }
-                if (currentPunctuationIndex < punctuations.Count &&
-                    i == punctuations[currentPunctuationIndex].PositionIndex)
+
+                if (punctuation < punctuations.Count && punctuations[punctuation].PositionIndex == i)
                 {
-                    punctuations[currentPunctuationIndex].Print();
-                    currentPunctuationIndex++;
-                    isPrinted = true;
+                    if (i > 0) Console.Write(" ");
+                    punctuations[punctuation].Print();
+                    punctuation++;
                 }
-                if (isPrinted) { Console.Write(" "); }
             }
+
+            Console.Write(" ");
         }
     }
 }

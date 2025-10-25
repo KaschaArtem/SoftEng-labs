@@ -18,5 +18,15 @@ namespace lab3
                 sentence.Print();
             }
         }
+
+        public void PrintByWordsIncreasing()
+        {
+            var sorted = sentences.OrderBy(s => s.Words.Count);
+
+            foreach (var sentence in sorted)
+            {
+                sentence.Print();
+            }
+        }
     }
 }

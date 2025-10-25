@@ -14,6 +14,10 @@ namespace lab3
         private List<Punctuation> punctuations { get; }
         private Type sentenceType { get; }
 
+        public List<Word> Words {
+            get { return words; }
+        }
+
         public Sentence(List<Word> words, List<Punctuation> punctuations, Type sentenceType)
         {
             this.words = words;

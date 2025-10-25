@@ -34,7 +34,7 @@
             TextParser textParser = new TextParser();
             Text text = textParser.ParseTextFile(inputFilePath);
 
-            text.Print();
+            text.PrintByWordsIncreasing();
         }
     }
 }

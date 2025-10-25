@@ -19,14 +19,24 @@ namespace lab3
             }
         }
 
-        public void PrintByWordsIncreasing()
+        private void PrintSorted(IEnumerable<Sentence> sorted)
         {
-            var sorted = sentences.OrderBy(s => s.Words.Count);
-
             foreach (var sentence in sorted)
             {
                 sentence.Print();
             }
+        }
+
+        public void PrintByWordsIncreasing()
+        {
+            var sorted = sentences.OrderBy(sentence => sentence.Words.Count);
+            PrintSorted(sorted);
+        }
+
+        public void PrintByLengthIncreasing()
+        {
+            var sorted = sentences.OrderBy(sentence => sentence.GetLength());
+            PrintSorted(sorted);
         }
     }
 }

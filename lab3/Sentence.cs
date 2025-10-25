@@ -53,5 +53,27 @@ namespace lab3
 
             Console.Write(" ");
         }
+
+        public int GetLength()
+        {
+            int symbols = 0;
+
+            foreach (Word word in words)
+            {
+                symbols += word.Value.Length;
+            }
+
+            foreach (Punctuation punctuation in punctuations)
+            {
+                symbols += punctuation.Value.Length;
+            }
+
+            if (words.Count > 1)
+            {
+                symbols += words.Count - 1;
+            }
+
+            return symbols;
+        }
     }
 }

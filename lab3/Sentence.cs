@@ -18,6 +18,11 @@ namespace lab3
             get { return words; }
         }
 
+        public Type SententenceType 
+        { 
+            get { return sentenceType; } 
+        }
+
         public Sentence(List<Word> words, List<Punctuation> punctuations, Type sentenceType)
         {
             this.words = words;

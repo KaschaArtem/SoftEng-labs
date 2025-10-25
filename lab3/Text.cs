@@ -45,6 +45,7 @@ namespace lab3
 
             foreach (var sentence in sentences)
             {
+                if (sentence.SententenceType != Type.Interrogative) { continue; }
                 foreach (var word in sentence.Words)
                 {   
                     if (word.Value.Length == wordLength) { unicWords.Add(word.Value.ToLower()); }

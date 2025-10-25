@@ -1,4 +1,5 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using System.Globalization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace lab3
 {
@@ -22,6 +23,14 @@ namespace lab3
         private void PrintSorted(IEnumerable<Sentence> sorted)
         {
             foreach (var sentence in sorted)
+            {
+                sentence.Print();
+            }
+        }
+
+        private void PrintRedacted(List<Sentence> redacted)
+        {
+            foreach (var sentence in redacted)
             {
                 sentence.Print();
             }
@@ -57,6 +66,34 @@ namespace lab3
             {
                 Console.Write($"{word} ");
             }
+        }
+
+        public void DeleteWordsByLength(int wordLength)
+        {
+            string russianConsonants = "бвгджзйклмнпрстфхцчшщ";
+            string englishConsonants = "bcdfghjklmnpqrstvwxyz";
+
+            List<Sentence> redacted = new List<Sentence>();
+            foreach (var sentence in sentences)
+            {
+                List<Word> redactedWords = new List<Word>();
+                foreach (var word in sentence.Words)
+                {
+                    var firstChar = word.Value.ToLower()[0];
+                    if (word.Value.Length == wordLength)
+                    {
+                        if (russianConsonants.Contains(firstChar) || englishConsonants.Contains(firstChar)) 
+                        { 
+                            continue; 
+                        }
+                    }
+                    redactedWords.Add(word);
+                }
+                List<Punctuation> punctuations = sentence.Punctuations;
+                Type sentenceType = sentence.SententenceType;
+                redacted.Add(new Sentence(redactedWords, punctuations, sentenceType));
+            }
+            PrintRedacted(redacted);
         }
     }
 }

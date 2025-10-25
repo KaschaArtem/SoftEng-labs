@@ -34,7 +34,9 @@
             TextParser textParser = new TextParser();
             Text text = textParser.ParseTextFile(inputFilePath);
 
-            text.GetUnicWordsByLength(5);
+            text.Print();
+            Console.WriteLine("\n\n\n");
+            text.DeleteWordsByLength(5);
         }
     }
 }

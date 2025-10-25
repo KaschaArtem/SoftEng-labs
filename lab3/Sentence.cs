@@ -18,6 +18,11 @@ namespace lab3
             get { return words; }
         }
 
+        public List<Punctuation> Punctuations
+        {
+            get { return punctuations; }
+        }
+
         public Type SententenceType 
         { 
             get { return sentenceType; } 
@@ -39,18 +44,21 @@ namespace lab3
                 punctuations.Count > 0 ? punctuations[^1].PositionIndex : 0
             );
 
+            bool isPrinted = false;
             for (int i = 0; i <= maxIndex; i++)
             {
                 if (word < words.Count && words[word].PositionIndex == i)
                 {
-                    if (i > 0) Console.Write(" ");
-                    words[word].Print();
+                    if (isPrinted) Console.Write(" ");
+                    else isPrinted = true;
+                        words[word].Print();
                     word++;
                 }
 
                 if (punctuation < punctuations.Count && punctuations[punctuation].PositionIndex == i)
                 {
-                    if (i > 0) Console.Write(" ");
+                    if (isPrinted) Console.Write(" ");
+                    else isPrinted = true;
                     punctuations[punctuation].Print();
                     punctuation++;
                 }

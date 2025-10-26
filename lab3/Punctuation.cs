@@ -1,30 +1,28 @@
-﻿namespace lab3
+﻿#pragma warning disable CS8618
+
+using System.Xml.Serialization;
+
+namespace lab3
 {
-    class Punctuation
+    public class Punctuation
     {
-        private string value { get; }
-        private int positionIndex { get; set; }
+        [XmlText]
+        public string Value { get; set; } = string.Empty;
 
-        public string Value 
-        { 
-            get { return value; }
-        }
+        [XmlIgnore]
+        public int PositionIndex { get; set; }
 
-        public int PositionIndex
-        {
-            get { return positionIndex; }
-            set { positionIndex = value; }
-        }
+        public Punctuation() { }
 
         public Punctuation(string value, int positionIndex)
         {
-            this.value = value;
-            this.positionIndex = positionIndex;
+            Value = value;
+            PositionIndex = positionIndex;
         }
 
         public void Print()
         {
-            Console.Write(value);
+            Console.Write(Value);
         }
     }
 }

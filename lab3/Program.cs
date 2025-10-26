@@ -1,8 +1,10 @@
-﻿namespace lab3
+﻿using System.Xml.Serialization;
+
+namespace lab3
 {
     class Program
     {
-        static string? GetTextFilePath()
+        private static string? GetTextFilePath()
         {
             string textsFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Texts");
             string[] textFiles = Directory.GetFiles(textsFolderPath, "*.txt");
@@ -37,6 +39,8 @@
             text.Print();
             Console.WriteLine("\n\n\n");
             text.DeleteStopWords();
+
+            text.SaveAsXML();
         }
     }
 }

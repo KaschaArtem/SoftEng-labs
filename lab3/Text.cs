@@ -1,21 +1,24 @@
-﻿using System.Data.SqlTypes;
-using System.Globalization;
-using static System.Net.Mime.MediaTypeNames;
+﻿using System.Xml.Serialization;
 
 namespace lab3
 {
-    class Text
+    [Serializable]
+    [XmlRoot("text")]
+    public class Text
     {
-        private List<Sentence> sentences { get; }
+        [XmlElement("sentence")]
+        public List<Sentence> Sentences { get; set; } = new List<Sentence>();
+
+        public Text() { }
 
         public Text(List<Sentence> sentences)
         {
-            this.sentences = sentences;
+            Sentences = sentences;
         }
 
         public void Print()
         {
-            foreach (var sentence in sentences)
+            foreach (var sentence in Sentences)
             {
                 sentence.Print();
             }
@@ -39,13 +42,13 @@ namespace lab3
 
         public void PrintByWordsIncreasing()
         {
-            var sorted = sentences.OrderBy(sentence => sentence.Words.Count);
+            var sorted = Sentences.OrderBy(sentence => sentence.Words.Count);
             PrintSorted(sorted);
         }
 
         public void PrintByLengthIncreasing()
         {
-            var sorted = sentences.OrderBy(sentence => sentence.GetLength());
+            var sorted = Sentences.OrderBy(sentence => sentence.GetLength());
             PrintSorted(sorted);
         }
 
@@ -53,7 +56,7 @@ namespace lab3
         {
             var unicWords = new HashSet<string>();
 
-            foreach (var sentence in sentences)
+            foreach (var sentence in Sentences)
             {
                 if (sentence.SententenceType != Type.Interrogative) { continue; }
                 foreach (var word in sentence.Words)
@@ -75,7 +78,7 @@ namespace lab3
             string englishConsonants = "bcdfghjklmnpqrstvwxyz";
 
             List<Sentence> redacted = new List<Sentence>();
-            foreach (var sentence in sentences)
+            foreach (var sentence in Sentences)
             {
                 List<Word> redactedWords = new List<Word>();
                 foreach (var word in sentence.Words)
@@ -99,17 +102,17 @@ namespace lab3
 
         public void PrintSentences()
         {
-            for (int i = 0; i < sentences.Count; i++)
+            for (int i = 0; i < Sentences.Count; i++)
             {
                 Console.Write($"{i + 1}. ");
-                sentences[i].Print();
+                Sentences[i].Print();
                 Console.WriteLine();
             }
         }
 
         public void ReplaceWordsByLength(int sentenceIndex, int wordLength, string substring)
         {
-            List<Sentence> redacted = sentences;
+            List<Sentence> redacted = Sentences;
             foreach (var word in redacted[sentenceIndex].Words)
             {
                 if (word.Value.Length == wordLength)
@@ -136,7 +139,7 @@ namespace lab3
             }
 
             List<Sentence> redacted = new List<Sentence>();
-            foreach (var sentence in sentences)
+            foreach (var sentence in Sentences)
             {
                 List<Word> redactedWords = new List<Word>();
                 foreach (var word in sentence.Words)
@@ -150,6 +153,17 @@ namespace lab3
                 redacted.Add(new Sentence(redactedWords, punctuations, sentenceType));
             }
             PrintRedacted(redacted);
+        }
+
+        public void SaveAsXML()
+        {
+            string textsFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Texts\output.xml");
+
+            var serializer = new XmlSerializer(typeof(Text));
+            using (var writer = new StreamWriter(textsFolderPath))
+            {
+                serializer.Serialize(writer, this);
+            }
         }
     }
 }

@@ -1,89 +1,96 @@
-﻿using System.Diagnostics;
+﻿using System.Xml.Serialization;
 
 namespace lab3
 {
-    enum Type
+    public enum Type
     {
         Declarative,
         Interrogative,
         Exclamatory
     }
-    class Sentence
+    [Serializable]
+    public class Sentence
     {
-        private List<Word> words { get; }
-        private List<Punctuation> punctuations { get; }
-        private Type sentenceType { get; }
+        [XmlIgnore]
+        public List<Word> Words { get; set; } = new List<Word>();
 
-        public List<Word> Words {
-            get { return words; }
-        }
+        [XmlIgnore]
+        public List<Punctuation> Punctuations { get; set; } = new List<Punctuation>();
 
-        public List<Punctuation> Punctuations
+        [XmlIgnore]
+        public Type SententenceType { get; set; }
+
+        [XmlElement("word", typeof(Word))]
+        [XmlElement("punctuation", typeof(Punctuation))]
+        public List<object> ItemsForXml
         {
-            get { return punctuations; }
+            get
+            {
+                var items = new List<object>();
+                items.AddRange(Words.Cast<object>());
+                items.AddRange(Punctuations.Cast<object>());
+                return items.OrderBy(item =>
+                {
+                    if (item is Word word) return word.PositionIndex;
+                    else if (item is Punctuation punctuation) return punctuation.PositionIndex;
+                    return 0;
+                }).ToList();
+            }
         }
 
-        public Type SententenceType 
-        { 
-            get { return sentenceType; } 
-        }
+        public Sentence() { }
 
         public Sentence(List<Word> words, List<Punctuation> punctuations, Type sentenceType)
         {
-            this.words = words;
-            this.punctuations = punctuations;
-            this.sentenceType = sentenceType;
+            Words = words;
+            Punctuations = punctuations;
+            SententenceType = sentenceType;
         }
 
-        public void Print()
-        {
-            int word = 0;
-            int punctuation = 0;
-            int maxIndex = Math.Max(
-                words.Count > 0 ? words[^1].PositionIndex : 0,
-                punctuations.Count > 0 ? punctuations[^1].PositionIndex : 0
-            );
-
-            bool isPrinted = false;
-            for (int i = 0; i <= maxIndex; i++)
-            {
-                if (word < words.Count && words[word].PositionIndex == i)
-                {
+        public void Print() 
+        { 
+            int word = 0; 
+            int punctuation = 0; 
+            int maxIndex = Math.Max(Words.Count > 0 ? Words[^1].PositionIndex : 0,
+                                    Punctuations.Count > 0 ? Punctuations[^1].PositionIndex : 0);
+            bool isPrinted = false; 
+            for (int i = 0; i <= maxIndex; i++) 
+            { 
+                if (word < Words.Count && Words[word].PositionIndex == i) 
+                { 
                     if (isPrinted) Console.Write(" ");
-                    else isPrinted = true;
-                        words[word].Print();
-                    word++;
-                }
-
-                if (punctuation < punctuations.Count && punctuations[punctuation].PositionIndex == i)
-                {
-                    if (isPrinted) Console.Write(" ");
-                    else isPrinted = true;
-                    punctuations[punctuation].Print();
-                    punctuation++;
-                }
-            }
-
-            Console.Write(" ");
+                    else isPrinted = true; 
+                    Words[word].Print();
+                    word++; 
+                } 
+                if (punctuation < Punctuations.Count && Punctuations[punctuation].PositionIndex == i) 
+                { 
+                    if (isPrinted) Console.Write(" "); 
+                    else isPrinted = true; 
+                    Punctuations[punctuation].Print(); 
+                    punctuation++; 
+                } 
+            } 
+            Console.Write(" "); 
         }
 
         public int GetLength()
         {
             int symbols = 0;
 
-            foreach (Word word in words)
+            foreach (Word word in Words)
             {
                 symbols += word.Value.Length;
             }
 
-            foreach (Punctuation punctuation in punctuations)
+            foreach (Punctuation punctuation in Punctuations)
             {
                 symbols += punctuation.Value.Length;
             }
 
-            if (words.Count > 1)
+            if (Words.Count > 1)
             {
-                symbols += words.Count - 1;
+                symbols += Words.Count - 1;
             }
 
             return symbols;

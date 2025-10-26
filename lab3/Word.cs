@@ -1,31 +1,26 @@
-﻿namespace lab3
+﻿using System.Xml.Serialization;
+
+namespace lab3
 {
-    class Word
+    public class Word
     {
-        private string value { get; set; }
-        private int positionIndex { get; set; }
+        [XmlText]
+        public string Value { get; set; } = string.Empty;
 
-        public string Value 
-        { 
-            get { return value; }
-            set { this.value = value; }
-        }
+        [XmlIgnore]
+        public int PositionIndex { get; set; }
 
-        public int PositionIndex
+        public Word() { }
+
+        public Word(string value, int positionIndex)
         {
-            get { return positionIndex; }
-            set { positionIndex = value; }
-        }
-
-        public Word(string value, int positionIndex) 
-        {
-            this.value = value;
-            this.positionIndex = positionIndex;
+            Value = value;
+            PositionIndex = positionIndex;
         }
 
         public void Print()
         {
-            Console.Write(value);
+            Console.Write(Value);
         }
     }
 }

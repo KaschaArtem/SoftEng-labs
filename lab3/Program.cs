@@ -36,7 +36,7 @@
 
             text.Print();
             Console.WriteLine("\n\n\n");
-            text.ReplaceWordsByLength(0, 5, "asdasdasd");
+            text.DeleteStopWords();
         }
     }
 }

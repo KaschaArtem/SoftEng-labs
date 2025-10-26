@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Data.SqlTypes;
+using System.Globalization;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace lab3
@@ -115,6 +116,38 @@ namespace lab3
                 {
                     word.Value = substring;
                 }
+            }
+            PrintRedacted(redacted);
+        }
+
+        public void DeleteStopWords()
+        {
+            string dataFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Data");
+            string[] stopWordsFiles = Directory.GetFiles(dataFolderPath, "stopwords_*.txt");
+
+            HashSet<string> stopWords = new HashSet<string>();
+            foreach (var stopWordsFile in stopWordsFiles)
+            {
+                string[] fileContent = File.ReadAllLines(stopWordsFile);
+                foreach (string line in fileContent)
+                {
+                    stopWords.Add(line);
+                }
+            }
+
+            List<Sentence> redacted = new List<Sentence>();
+            foreach (var sentence in sentences)
+            {
+                List<Word> redactedWords = new List<Word>();
+                foreach (var word in sentence.Words)
+                {
+                    if (!stopWords.Contains(word.Value)) {
+                        redactedWords.Add(word);
+                    }
+                }
+                List<Punctuation> punctuations = sentence.Punctuations;
+                Type sentenceType = sentence.SententenceType;
+                redacted.Add(new Sentence(redactedWords, punctuations, sentenceType));
             }
             PrintRedacted(redacted);
         }

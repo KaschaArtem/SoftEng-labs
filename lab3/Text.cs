@@ -95,5 +95,28 @@ namespace lab3
             }
             PrintRedacted(redacted);
         }
+
+        public void PrintSentences()
+        {
+            for (int i = 0; i < sentences.Count; i++)
+            {
+                Console.Write($"{i + 1}. ");
+                sentences[i].Print();
+                Console.WriteLine();
+            }
+        }
+
+        public void ReplaceWordsByLength(int sentenceIndex, int wordLength, string substring)
+        {
+            List<Sentence> redacted = sentences;
+            foreach (var word in redacted[sentenceIndex].Words)
+            {
+                if (word.Value.Length == wordLength)
+                {
+                    word.Value = substring;
+                }
+            }
+            PrintRedacted(redacted);
+        }
     }
 }

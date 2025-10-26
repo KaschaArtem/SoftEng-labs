@@ -2,12 +2,13 @@
 {
     class Word
     {
-        private string value { get; }
+        private string value { get; set; }
         private int positionIndex { get; set; }
 
         public string Value 
         { 
             get { return value; }
+            set { this.value = value; }
         }
 
         public int PositionIndex

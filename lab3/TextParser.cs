@@ -15,12 +15,12 @@ namespace lab3
 
             foreach (Match match in sentenceMatches)
             {
-                string sentenceText = match.Value.Trim();
+                string sentence = match.Value.Trim();
 
                 List<Word> words = new List<Word>();
                 List<Punctuation> punctuations = new List<Punctuation>();
 
-                var tokens = Regex.Matches(sentenceText, @"([\p{L}\p{Nd}\-]+|[^\p{L}\p{Nd}\s]+)");
+                var tokens = Regex.Matches(sentence, @"([\p{L}\p{Nd}\-]+|[^\p{L}\p{Nd}\s]+)");
 
                 string lastToken = tokens[tokens.Count - 1].Value;
                 char firstChar = lastToken[0];

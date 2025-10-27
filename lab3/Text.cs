@@ -155,6 +155,29 @@ namespace lab3
             PrintRedacted(redacted);
         }
 
+        public void GetConcordance() 
+        { 
+            Dictionary<string, Element> wordStats = new();
+
+            for (int i = 0; i < Sentences.Count; i++)
+            {
+                foreach (var word in Sentences[i].Words)
+                {
+                    string w = word.Value.ToLower();
+                    if (!wordStats.ContainsKey(w))
+                        wordStats[w] = new Element();
+
+                    wordStats[w].Amount++;
+                    wordStats[w].Indexes.Add(i + 1);
+                }
+            }
+
+            foreach (var kvp in wordStats)
+            {
+                Console.Write($"{kvp.Key} -> {kvp.Value.Amount}: {string.Join(", ", kvp.Value.Indexes)}");
+            }
+        }
+
         public void SaveAsXML()
         {
             string textsFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\Texts\output.xml");

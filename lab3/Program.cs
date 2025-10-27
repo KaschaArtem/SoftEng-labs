@@ -47,7 +47,8 @@ namespace lab3
                     "4. Delete all words with first char is consonant by input length\n" +
                     "5. Replace words with input substring by input length in choosen sentence\n" +
                     "6. Delete all stop words in text\n" +
-                    "7. Save text as XML\n"
+                    "7. Get concordance of text\n" +
+                    "8. Save text as XML\n"
                 );
                 while (!int.TryParse(Console.ReadLine(), out optionchoise) || optionchoise < 0 || optionchoise > 7)
                     Console.WriteLine("Wrong input!");
@@ -104,6 +105,9 @@ namespace lab3
                         text.DeleteStopWords();
                         break;
                     case 7:
+                        text.GetConcordance();
+                        break;
+                    case 8:
                         text.SaveAsXML();
                         Console.WriteLine("Saved at Texts folder!");
                         break;

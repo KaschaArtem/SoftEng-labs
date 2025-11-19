@@ -34,15 +34,32 @@
                     break;
 
                 case '2':
+                    Console.WriteLine(airline.GetTotalLoadCapacity());
                     break;
 
                 case '3':
+                    Console.WriteLine(airline.GetTotalPassengersCapacity());
                     break;
 
                 case '4':
+                    airline.SortByFlightRange();
+                    Console.WriteLine("Sorted!");
                     break;
 
                 case '5':
+                    Console.Write("Enter min and max: ");
+                    string[] parts = Console.ReadLine()!.Split();
+                    if (parts.Length >= 2 &&
+                        int.TryParse(parts[0], out int min) &&
+                        int.TryParse(parts[1], out int max))
+                    {
+                        foreach (var aircraft in airline.GetByFuelConsumptionRange(min, max))
+                            Console.WriteLine(aircraft);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input!");
+                    }
                     break;
 
                 case 'a':

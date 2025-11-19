@@ -36,7 +36,7 @@ public class Airline
         Aircrafts = Aircrafts.OrderBy(r => r.FlightRange).ToList();
     }
 
-    public List<Aircraft> FindByFuelConsumptionRange(float min, float max)
+    public List<Aircraft> GetByFuelConsumptionRange(float min, float max)
     {
         return Aircrafts.Where(c => c.FuelConsumption >= min && c.FuelConsumption <= max).ToList();
     }

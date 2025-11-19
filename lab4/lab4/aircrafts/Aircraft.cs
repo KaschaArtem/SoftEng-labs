@@ -24,11 +24,25 @@ public abstract class Aircraft
         {
             "cargo" => Type.Cargo,
             "passenger" => Type.Passenger,
-            _ => throw new NotImplementedException()
+            _ => throw new Exception("Unknown aircraft type")
         };
         FlightRange = flightRange;
         FuelConsumption = fuelConsumption;
     }
+
+    protected void ReadBaseFields()
+    {
+        Console.Write("Enter model: ");
+        Model = Console.ReadLine()!;
+
+        Console.Write("Enter flight range: ");
+        FlightRange = int.Parse(Console.ReadLine()!);
+
+        Console.Write("Enter fuel consumption: ");
+        FuelConsumption = float.Parse(Console.ReadLine()!);
+    }
+
+    public abstract Aircraft Create();
 
     public override string ToString()
     {

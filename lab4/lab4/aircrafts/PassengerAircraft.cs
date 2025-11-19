@@ -10,6 +10,16 @@
         PassengerCapacity = passengerCapacity;
     }
 
+    public override Aircraft Create()
+    {
+        ReadBaseFields();
+
+        Console.Write("Enter passenger capacity: ");
+        PassengerCapacity = int.Parse(Console.ReadLine()!);
+
+        return this;
+    }
+
     public override string ToString()
     {
         return base.ToString() + $", Passengers: {PassengerCapacity}";

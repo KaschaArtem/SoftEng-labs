@@ -2,8 +2,11 @@
 {
     public static void Main(string[] args)
     {
+        string txtFilePath = Path.Combine("..", "..", "..", "data", "aircrafts.txt");
+        string xmlFilePath = Path.Combine("..", "..", "..", "data", "aircrafts.xml");
+
         DataParser parser = new DataParser();
-        var aircraftsFromFile = parser.ParseAircraftsFromFile(Path.Combine("..", "..", "..", "data", "aircrafts.txt"));
+        var aircraftsFromFile = parser.ParseAircraftsFromFile(txtFilePath);
 
         Airline airline = new Airline(aircraftsFromFile);
 
@@ -63,24 +66,46 @@
                     break;
 
                 case 'a':
+                    Console.Write("Choose aircraft type:\n" +
+                                  "1. Passenger\n" +
+                                  "2. Cargo\n" +
+                                  ">>> ");
+
+                    char inputType = Console.ReadKey().KeyChar;
+                    Console.WriteLine();
+                    switch (inputType)
+                    {
+                        case '1':
+                            var passengerAircraft = new PassengerAircraft();
+                            airline.AddAircraft(passengerAircraft.Create());
+                            break;
+                        case '2':
+                            var cargoAircraft = new CargoAircraft();
+                            airline.AddAircraft(cargoAircraft.Create());
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choise!");
+                            break;
+                    }
                     break;
 
                 case 'r':
                     break;
 
                 case 's':
-                    airline.Serialize(Path.Combine("..", "..", "..", "data", "aircrafts.xml"));
+                    airline.Serialize(xmlFilePath);
                     Console.WriteLine("Saved!");
                     break;
 
                 case 'd':
-                    Airline loaded = Airline.Deserialize(Path.Combine("..", "..", "..", "data", "aircrafts.xml"));
+                    Airline loaded = Airline.Deserialize(xmlFilePath);
                     Console.Write("Load xml?:\n" +
                                   "y. Yes\n" +
                                   "!y. No\n" +
                                   ">>> ");
 
                     char inputLoad = Console.ReadKey().KeyChar;
+                    Console.WriteLine();
                     if (inputLoad == 'y') { airline = loaded; }
                     break;
             }

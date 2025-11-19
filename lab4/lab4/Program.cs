@@ -90,6 +90,21 @@
                     break;
 
                 case 'r':
+                    Console.WriteLine("Choose aircraft to remove:");
+                    for (int i = 1; i <= airline.AircraftAmount; i++)
+                        Console.WriteLine($"[{i}] {airline.Aircrafts[i - 1]}");
+
+                    Console.Write(">>> ");
+                    int inputRemove = int.Parse(Console.ReadLine()!) - 1;
+                    if (inputRemove >= 0 && inputRemove < airline.AircraftAmount)
+                    {
+                        var aircraft = airline.Aircrafts[inputRemove];
+                        airline.RemoveAircraft(aircraft);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid choise!");
+                    }
                     break;
 
                 case 's':

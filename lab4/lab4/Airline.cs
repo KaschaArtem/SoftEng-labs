@@ -4,6 +4,11 @@ public class Airline
 {
     public List<Aircraft> Aircrafts { get; set; } = new();
 
+    public int AircraftAmount
+    {
+        get {  return Aircrafts.Count; }
+    }
+
     public Airline() { }
 
     public Airline(List<Aircraft> aircrafts)

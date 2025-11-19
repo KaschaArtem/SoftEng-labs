@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using System.Xml.Serialization;
 
 public class Airline
 {
@@ -43,12 +43,17 @@ public class Airline
 
     public void Serialize(string filePath)
     {
+        XmlSerializer serializer = new XmlSerializer(typeof(Airline));
 
+        using FileStream fileStream = new FileStream(filePath, FileMode.Create);
+        serializer.Serialize(fileStream, this);
     }
 
     public static Airline Deserialize(string filePath)
     {
+        XmlSerializer serializer = new XmlSerializer(typeof(Airline));
 
-        return new Airline();
+        using FileStream fileStream = new FileStream(filePath, FileMode.Open);
+        return (Airline)serializer.Deserialize(fileStream)!;
     }
 }

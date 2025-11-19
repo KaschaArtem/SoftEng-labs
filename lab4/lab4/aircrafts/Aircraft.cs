@@ -1,4 +1,8 @@
-﻿public abstract class Aircraft
+﻿using System.Xml.Serialization;
+
+[XmlInclude(typeof(CargoAircraft))]
+[XmlInclude(typeof(PassengerAircraft))]
+public abstract class Aircraft
 {
     public enum Type
     {

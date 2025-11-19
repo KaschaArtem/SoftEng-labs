@@ -19,7 +19,7 @@
                           "r. Remove aircraft\n" +
                           "s. Serialize airline\n" +
                           "d. Deserialize airline\n" +
-                          "e. exit\n" +
+                          "e. Exit\n" +
                           ">>> ");
 
             char input = Console.ReadKey().KeyChar;
@@ -69,9 +69,19 @@
                     break;
 
                 case 's':
+                    airline.Serialize(Path.Combine("..", "..", "..", "data", "aircrafts.xml"));
+                    Console.WriteLine("Saved!");
                     break;
 
                 case 'd':
+                    Airline loaded = Airline.Deserialize(Path.Combine("..", "..", "..", "data", "aircrafts.xml"));
+                    Console.Write("Load xml?:\n" +
+                                  "y. Yes\n" +
+                                  "!y. No\n" +
+                                  ">>> ");
+
+                    char inputLoad = Console.ReadKey().KeyChar;
+                    if (inputLoad == 'y') { airline = loaded; }
                     break;
             }
 

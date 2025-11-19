@@ -16,10 +16,10 @@
             switch (type)
             {
                 case "cargo":
-                    result.Add(new CargoAircraft(model, range, fuel, capacity));
+                    result.Add(new CargoAircraft(model, type, range, fuel, capacity));
                     break;
                 case "passenger":
-                    result.Add(new PassengerAircraft(model, range, fuel, capacity));
+                    result.Add(new PassengerAircraft(model, type, range, fuel, capacity));
                     break;
             }
         }

@@ -4,8 +4,8 @@
 
     public PassengerAircraft() { }
 
-    public PassengerAircraft(string model, int flightRange, float fuelConsumption, int passengerCapacity)
-        : base(model, flightRange, fuelConsumption)
+    public PassengerAircraft(string model, string aircraftType, int flightRange, float fuelConsumption, int passengerCapacity)
+        : base(model, aircraftType, flightRange, fuelConsumption)
     {
         PassengerCapacity = passengerCapacity;
     }

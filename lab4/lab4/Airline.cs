@@ -31,9 +31,9 @@ public class Airline
         return Aircrafts.OfType<PassengerAircraft>().Sum(c => c.PassengerCapacity);
     }
 
-    public void SortByFlightRange()
+    public void Sort(IAircraftSorter sorter)
     {
-        Aircrafts = Aircrafts.OrderBy(r => r.FlightRange).ToList();
+        Aircrafts = sorter.Sort(Aircrafts);
     }
 
     public List<Aircraft> GetByFuelConsumptionRange(float min, float max)
@@ -55,5 +55,18 @@ public class Airline
 
         using FileStream fileStream = new FileStream(filePath, FileMode.Open);
         return (Airline)serializer.Deserialize(fileStream)!;
+    }
+}
+
+public interface IAircraftSorter
+{
+    List<Aircraft> Sort(List<Aircraft> aircrafts);
+}
+
+public class SortByFlightRange : IAircraftSorter
+{
+    public List<Aircraft> Sort(List<Aircraft> aircrafts)
+    {
+        return aircrafts.OrderBy(r => r.FlightRange).ToList();
     }
 }

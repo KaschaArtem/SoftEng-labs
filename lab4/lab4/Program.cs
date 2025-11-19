@@ -42,7 +42,7 @@
                     break;
 
                 case '4':
-                    airline.SortByFlightRange();
+                    airline.Sort(new SortByFlightRange());
                     Console.WriteLine("Sorted!");
                     break;
 

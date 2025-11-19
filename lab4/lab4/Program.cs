@@ -3,5 +3,62 @@
     public static void Main(string[] args)
     {
         DataParser parser = new DataParser();
+        var aircraftsFromFile = parser.ParseAircraftsFromFile(Path.Combine("..", "..", "..", "data", "aircrafts.txt"));
+
+        Airline airline = new Airline(aircraftsFromFile);
+
+        do
+        {
+            Console.Write("Choose option:\n" +
+                          "1. Output all aircrafts\n" +
+                          "2. Output total load capacity\n" +
+                          "3. Output total passengers capacity\n" +
+                          "4. Sort by flight range\n" +
+                          "5. Output by fuel consumption range\n" +
+                          "a. Add aircraft\n" +
+                          "r. Remove aircraft\n" +
+                          "s. Serialize airline\n" +
+                          "d. Deserialize airline\n" +
+                          "e. exit\n" +
+                          ">>> ");
+
+            char input = Console.ReadKey().KeyChar;
+            if (input == 'e') { return; }
+            else { Console.Write("\n\n\n"); }
+
+            switch (input)
+            {
+                case '1':
+                    foreach (var aircraft in airline.Aircrafts)
+                        Console.WriteLine(aircraft);
+                    break;
+
+                case '2':
+                    break;
+
+                case '3':
+                    break;
+
+                case '4':
+                    break;
+
+                case '5':
+                    break;
+
+                case 'a':
+                    break;
+
+                case 'r':
+                    break;
+
+                case 's':
+                    break;
+
+                case 'd':
+                    break;
+            }
+
+            Console.Write("\n\n");
+        } while (true);
     }
 }

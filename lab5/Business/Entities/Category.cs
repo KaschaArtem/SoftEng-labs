@@ -7,6 +7,8 @@ public class Category : BusinessObject
 {
     public string Name { get; set; } = String.Empty;
 
+    public Category() { }
+
     public Category(string name)
     {
         Name = name;

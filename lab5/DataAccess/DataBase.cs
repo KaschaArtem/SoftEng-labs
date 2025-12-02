@@ -1,0 +1,102 @@
+using Business.Entities;
+using System.Xml.Linq;
+
+namespace DataAccess;
+
+public class DataBase
+{
+    public static string connectionString { get; set; } = String.Empty;
+    static DataBase? instance;
+
+    public Dictionary<string, List<Product>> Products { get; set; }
+    public List<Category> Categories { get; set; }
+    public DailyRation Ration { get; set; } 
+
+    private DataBase(string connectionString )
+    {
+        if (DataBase.connectionString == null)
+            connectionString = "products.xml";
+        else
+            DataBase.connectionString = connectionString;
+        Products = new Dictionary<string, List<Product>>();
+        Categories = new List<Category>();
+        Ration = new DailyRation();
+        Read(connectionString);
+    }
+
+    private void Read(string connectionString)
+    {
+        XDocument xdoc = XDocument.Load(connectionString);
+        foreach (XElement xcategory in xdoc.Element("Db")!.Elements("Category"))
+        {
+            Category category = new Category()
+            {
+                Name = xcategory.Attribute("name")!.Value,
+            };
+            Categories.Add(category);
+
+            List<Product> categoryProducts = new List<Product>();
+            foreach (XElement xproduct in xcategory.Elements("Product"))
+            {
+                Product product = new Product();
+                product.Name = xproduct.Element("Name")!.Value;
+                product.Weight = Convert.ToDouble(xproduct.Element("Gramms")!.Value);
+                product.Protein = Convert.ToDouble(xproduct.Element("Protein")!.Value);
+                product.Fats = Convert.ToDouble(xproduct.Element("Fats")!.Value);
+                product.Carbs = Convert.ToDouble(xproduct.Element("Carbs")!.Value);
+                product.Calories100 = Convert.ToDouble(xproduct.Element("Calories")!.Value);
+                product.Category = category;
+                categoryProducts.Add(product);
+            }
+            Products[category.Name] = categoryProducts;
+        }
+    }
+    
+    public static DataBase GetInstance()
+    {
+        if (instance == null)
+            return new DataBase(connectionString);
+        return instance;
+    }
+
+    // Insert mealtime
+    public void Insert(string mealtimeName)
+    {
+        if (!Ration.MealTimes.ContainsKey(mealtimeName))
+        {
+            Ration.MealTimes[mealtimeName] = new MealTime(mealtimeName);
+            Ration.MealAmount++;
+        }
+    }
+    
+    // Insert product in mealtime
+    public void Insert(string mealtimeName, Product product)
+    {
+        Ration.MealTimes[mealtimeName].Meal.Add(new Product(product));
+    }
+
+    // Delete mealtime
+    public void Delete(string mealtimeName)
+    {
+        Ration.MealTimes.Remove(mealtimeName);
+        Ration.MealAmount--;
+    }
+    
+    // Delete product in mealtime
+    public void Delete(string mealtimeName, string productName)
+    {
+        foreach (Product p in Ration.MealTimes[mealtimeName].Meal)
+            if (p.Name == productName)
+            {
+                Ration.MealTimes[mealtimeName].Meal.Remove(p);
+                return;
+            }
+    }
+
+    public void ClearDailyRation()
+    {
+        Ration = new DailyRation();
+    }
+
+    public void SaveDailyRation(string filename) { }
+}

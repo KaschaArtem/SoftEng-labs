@@ -5,13 +5,13 @@ namespace Business.Entities;
 
 public class Product : BusinessObject
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = String.Empty;
     public double Calories100 { get; set; }
     public double Weight { get; set; }
     public double Protein { get; set; }
     public double Fats { get; set; }
     public double Carbs { get; set; }
-    public Category Category { get; set; }
+    public Category Category { get; set; } = new Category();
 
     public double Calories
     {
@@ -22,6 +22,8 @@ public class Product : BusinessObject
             return Calories100;
         }
     }
+
+    public Product() { }
 
     public Product(Product product)
     {

@@ -2,7 +2,7 @@ using Business.Entities;
 
 namespace DataAccess;
 
-public class ProductDAO
+public class ProductDAO : IProductDAO
 {
     static DataBase db = DataBase.GetInstance();
 

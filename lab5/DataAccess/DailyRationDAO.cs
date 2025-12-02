@@ -2,7 +2,7 @@ using Business.Entities;
 
 namespace DataAccess;
 
-public class DailyRationDAO
+public class DailyRationDAO : IDailyRationDAO
 {
     static DataBase db = DataBase.GetInstance();
     

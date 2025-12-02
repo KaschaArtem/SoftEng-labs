@@ -5,7 +5,18 @@ namespace Business.Entities;
 
 public class DailyRation : BusinessObject
 {
-    public int MealAmount { get; set; }
+    private int mealAmount;
+    public int MealAmount
+    {
+        get { return mealAmount; }
+        set
+        {
+            if (value < 0)
+                mealAmount = 0;
+            else
+                mealAmount = value;
+        }
+    }
     public Dictionary<string, MealTime> MealTimes { get; set; }
 
     public DailyRation(int n = 3)

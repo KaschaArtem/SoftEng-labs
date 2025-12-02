@@ -10,7 +10,7 @@ public class DataBase
 
     public Dictionary<string, List<Product>> Products { get; private set; }
     public List<Category> Categories { get; private set; }
-    public DailyRation Ration { get; private set; } 
+    public DailyRation Ration { get; private set; }
 
     private DataBase(string connectionString )
     {

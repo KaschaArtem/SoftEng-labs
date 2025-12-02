@@ -12,9 +12,42 @@ public enum ActivityType
 
 public class User : BusinessObject
 {
-    public double Weight { get; set; }
-    public double Height { get; set; }
-    public int Age { get; set; }
+    private double weight;
+    public double Weight
+    {
+        get { return weight; }
+        set
+        {
+            if (value < 0)
+                weight = 0;
+            else
+                weight = value;
+        }
+    }
+    private double height;
+    public double Height
+    {
+        get { return height; }
+        set
+        {
+            if (value < 0)
+                height = 0;
+            else
+                height = value;
+        }
+    }
+    private int age;
+    public int Age
+    {
+        get { return age; }
+        set
+        {
+            if (value < 0)
+                age = 0;
+            else
+                age = value;
+        }
+    }
     public ActivityType Activity { get; set; }
 
     public User(double weight = 75, double height = 170, int age = 30, ActivityType activity = ActivityType.Normal)

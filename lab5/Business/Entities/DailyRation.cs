@@ -1,3 +1,4 @@
+using System.Text;
 using Business.Base;
 
 namespace Business.Entities;
@@ -23,5 +24,21 @@ public class DailyRation : BusinessObject
             foreach (Product p in MealTimes[s].Meal)
                 calories += p.Calories;
         return calories;
+    }
+
+    public override string ToString()
+    {
+        var output = new StringBuilder();
+        foreach (string s in MealTimes.Keys)
+        {
+            output.Append(s);
+            output.Append(": \n");
+            foreach (Product p in MealTimes[s].Meal)
+            {
+                output.Append(p.ToString());
+                output.Append("\n");
+            }
+        }
+        return output.ToString();
     }
 }

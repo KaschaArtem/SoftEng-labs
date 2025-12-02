@@ -8,9 +8,9 @@ public class DataBase
     public static string connectionString { get; set; } = String.Empty;
     static DataBase? instance;
 
-    public Dictionary<string, List<Product>> Products { get; set; }
-    public List<Category> Categories { get; set; }
-    public DailyRation Ration { get; set; } 
+    public Dictionary<string, List<Product>> Products { get; private set; }
+    public List<Category> Categories { get; private set; }
+    public DailyRation Ration { get; private set; } 
 
     private DataBase(string connectionString )
     {
@@ -98,5 +98,9 @@ public class DataBase
         Ration = new DailyRation();
     }
 
-    public void SaveDailyRation(string filename) { }
+    public void SaveDailyRation(string filename)
+    {
+        using (StreamWriter writer = new StreamWriter(filename))
+            writer.WriteLine(Ration);
+    }
 }

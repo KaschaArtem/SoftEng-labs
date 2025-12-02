@@ -37,4 +37,9 @@ public class Product : BusinessObject
 
         AddRule(new NameRule(nameof(Name)));
     }
+
+    public override string ToString()
+    {
+        return $"{Name} {Protein} {Fats} {Carbs} {Calories}";
+    }
 }

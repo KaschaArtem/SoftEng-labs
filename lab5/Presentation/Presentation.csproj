@@ -18,4 +18,10 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Service\Service.csproj" />
+    <ProjectReference Include="..\Business\Business.csproj" />
+  </ItemGroup>
+
 </Project>

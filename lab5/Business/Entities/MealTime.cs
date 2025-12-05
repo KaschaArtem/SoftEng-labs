@@ -16,6 +16,21 @@ public class MealTime : BusinessObject
         AddRule(new NameRule(nameof(Name)));
     }
 
+    public void AddProduct(Product product)
+    {
+        Meal.Add(product);
+    }
+
+    public void RemoveProduct(Product product)
+    {
+        Meal.Remove(product);
+    }
+
+    public List<Product> GetProducts()
+    {
+        return Meal;
+    }
+
     public double GetCalories()
     {
         double calories = 0;

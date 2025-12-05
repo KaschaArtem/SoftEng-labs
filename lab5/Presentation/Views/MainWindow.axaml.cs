@@ -1,9 +1,11 @@
 using Business.Entities;
 using Service;
-using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Input;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Presentation.Views;
 
@@ -16,6 +18,8 @@ public partial class MainWindow : Window
 
     private Product? selectedProduct;
     private MealTime? selectedMealTime;
+
+    private Dictionary<string, TreeViewItem> mealTimeTrees = new Dictionary<string, TreeViewItem>();
 
     public MainWindow()
     {
@@ -59,21 +63,27 @@ public partial class MainWindow : Window
             foreach (Product product in products)
             {
                 var productNode = new TreeViewItem { Header = product.Name };
-
-                ((IList)categoryNode.Items).Add(productNode);
+                categoryNode.Items.Add(productNode);
             }
 
-            ((IList)ProductCategoryTree.Items).Add(categoryNode);
+            ProductCategoryTree.Items.Add(categoryNode);
         }
     }
 
     private void LoadMealTimes()
     {
-        foreach (string mealTime in ration.MealTimes.Keys)
+        foreach (var kvp in ration.MealTimes)
         {
-            var mealTimeNode = new TreeViewItem { Header = mealTime };
+            var mealTimeNode = new TreeViewItem { Header = kvp.Key };
+            mealTimeTrees.Add(kvp.Key, mealTimeNode);
 
-            ((IList)ProductMealTimeTree.Items).Add(mealTimeNode);
+            foreach (var product in kvp.Value.Meal)
+            {
+                var productNode = new TreeViewItem { Header = product.Name };
+                mealTimeNode.Items.Add(productNode);
+            }
+
+            ProductMealTimeTree.Items.Add(mealTimeNode);
         }
     }
 
@@ -87,6 +97,12 @@ public partial class MainWindow : Window
         RadioNormal.IsCheckedChanged += OnRadioChanged;
         RadionAverage.IsCheckedChanged += OnRadioChanged;
         RadioHigh.IsCheckedChanged += OnRadioChanged;
+
+        ProductCategorySearch.TextChanged += OnProductCategorySearchChanged;
+        ProductMealTimeSearch.TextChanged += OnProductMealTimeSearchChanged;
+
+        ProductCategoryTree.PointerReleased += OnProductTreeRightClick;
+        ProductMealTimeTree.PointerReleased += OnMealProductTreeRightClick;
     }
 
     private void OnUserWeightChanged(object? sender, TextChangedEventArgs e)
@@ -183,6 +199,202 @@ public partial class MainWindow : Window
             NormalProteinBox.Text = user.GetDailyProtein(calories.Value).ToString();
             NormalFatsBox.Text = user.GetDailyFats(calories.Value).ToString();
             NormalCarbsBox.Text = user.GetDailyCarbs(calories.Value).ToString();
+        }
+    }
+
+    private void OnProductCategorySearchChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox searchBox)
+        {
+            string searchText = searchBox.Text ?? "";
+
+            foreach (TreeViewItem categoryNode in ProductCategoryTree.Items!)
+            {
+                categoryNode.IsVisible = true;
+
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    foreach (TreeViewItem productNode in categoryNode.Items!)
+                    {
+                        productNode.IsVisible = true;
+                    }
+                    categoryNode.IsExpanded = false;
+                    continue;
+                }
+
+                searchText = searchText.ToLower();
+                bool hasVisibleProducts = false;
+
+                foreach (TreeViewItem productNode in categoryNode.Items!)
+                {
+                    bool isVisible = false;
+
+                    if (productNode.Header!.ToString()!.ToLower().Contains(searchText))
+                        isVisible = true;
+
+                    productNode.IsVisible = isVisible;
+
+                    if (isVisible)
+                        hasVisibleProducts = true;
+                }
+
+                categoryNode.IsVisible = hasVisibleProducts;
+
+                categoryNode.IsExpanded = hasVisibleProducts;
+            }
+        }
+    }
+
+    private void OnProductMealTimeSearchChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox searchBox)
+        {
+            string searchText = searchBox.Text ?? "";
+
+            foreach (TreeViewItem mealTimeNode in ProductMealTimeTree.Items!)
+            {
+                mealTimeNode.IsVisible = true;
+
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    foreach (TreeViewItem productNode in mealTimeNode.Items!)
+                    {
+                        productNode.IsVisible = true;
+                    }
+                    continue;
+                }
+
+                searchText = searchText.ToLower();
+                bool hasVisibleProducts = false;
+
+                foreach (TreeViewItem productNode in mealTimeNode.Items!)
+                {
+                    bool isVisible = false;
+
+                    if (productNode.Header!.ToString()!.ToLower().Contains(searchText))
+                        isVisible = true;
+
+                    productNode.IsVisible = isVisible;
+
+                    if (isVisible)
+                        hasVisibleProducts = true;
+                }
+
+                mealTimeNode.IsVisible = hasVisibleProducts;
+
+                mealTimeNode.IsExpanded = hasVisibleProducts;
+            }
+        }
+    }
+
+    private void OnProductTreeRightClick(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Right)
+            return;
+
+        if (ProductCategoryTree.SelectedItem is not TreeViewItem item)
+            return;
+
+        if (item.Items.Count > 0)
+            return;
+
+        string productName = item.Header!.ToString()!;
+
+        Product product = service.GetProduct(productName);
+
+        var menu = new ContextMenu();
+
+        foreach (var kvp in ration.MealTimes)
+        {
+            var menuItem = new MenuItem { Header = $"Добавить в {kvp.Key}" };
+            menuItem.Click += (_, __) =>
+            {
+                kvp.Value.AddProduct(product);
+                AddProductToMealTimeInfo(kvp.Key, productName);
+            };
+            menu.Items.Add(menuItem);
+        }
+
+        menu.Open(item);
+    }
+
+    private void OnMealProductTreeRightClick(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton != MouseButton.Right)
+            return;
+
+        if (ProductMealTimeTree.SelectedItem is not TreeViewItem item)
+            return;
+
+        if (item.Parent is not TreeViewItem mealItem)
+            return;
+
+        string productName = item.Header!.ToString()!;
+        string currentMeal = mealItem.Header!.ToString()!;
+
+        Product product = service.GetProduct(productName);
+
+        var menu = new ContextMenu();
+
+        var moveMenu = new MenuItem { Header = "Переместить в..." };
+
+        foreach (var kvp in ration.MealTimes)
+        {
+            if (kvp.Key == currentMeal)
+                continue;
+
+            var menuItem = new MenuItem { Header = kvp.Key };
+            menuItem.Click += (_, __) =>
+            {
+                ration.MealTimes[currentMeal].RemoveProduct(product);
+                kvp.Value.AddProduct(product);
+                RemoveProductFromMealTimeInfo(currentMeal, productName);
+                AddProductToMealTimeInfo(kvp.Key, productName);
+
+            };
+            moveMenu.Items.Add(menuItem);
+        }
+
+        var delete = new MenuItem { Header = "Удалить" };
+        delete.Click += (_, __) =>
+        {
+            ration.MealTimes[currentMeal].RemoveProduct(product);
+            RemoveProductFromMealTimeInfo(currentMeal, productName);
+        };
+
+        menu.Items.Add(moveMenu);
+        menu.Items.Add(delete);
+
+        menu.Open(item);
+    }
+
+    private void AddProductToMealTimeInfo(string key, string productName)
+    {
+        if (mealTimeTrees.TryGetValue(key, out var mealTimeNode))
+        {
+            var productNode = new TreeViewItem { Header = productName };
+            mealTimeNode.Items.Add(productNode);
+        }
+    }
+
+    private void RemoveProductFromMealTimeInfo(string key, string productName)
+    {
+        if (mealTimeTrees.TryGetValue(key, out var mealTimeNode))
+        {
+            TreeViewItem? nodeToRemove = null;
+            foreach (TreeViewItem item in mealTimeNode.Items!)
+            {
+                if (item.Header?.ToString() == productName)
+                {
+                    nodeToRemove = item;
+                    break;
+                }
+            }
+
+            if (nodeToRemove != null)
+            {
+                mealTimeNode.Items.Remove(nodeToRemove);
+            }
         }
     }
 }

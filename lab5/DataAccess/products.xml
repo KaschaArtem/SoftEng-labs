@@ -8059,7 +8059,7 @@
     
   </Product>
     </Category>
-	<Category name = "New Categories" description = "">
+	<Category name = "Компоты" description = "">
   <Product>
     <Name>Компот из абрикосов</Name>
     <Gramms>100</Gramms>

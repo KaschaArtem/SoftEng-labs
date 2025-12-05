@@ -14,8 +14,12 @@ public class DataBase
 
     private DataBase(string connectionString )
     {
-        if (DataBase.connectionString == null)
-            connectionString = "products.xml";
+        if (DataBase.connectionString == String.Empty)
+        {
+            var basePath = AppContext.BaseDirectory;
+            var fullPath = Path.Combine(basePath, "..", "..", "..", "..", "DataAccess", "products.xml");
+            connectionString = fullPath;
+        }
         else
             DataBase.connectionString = connectionString;
         Products = new Dictionary<string, List<Product>>();

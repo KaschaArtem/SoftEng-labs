@@ -4,6 +4,7 @@ namespace Business.Entities;
 
 public enum ActivityType
 {
+    Unknown,
     Low,
     Normal,
     Average,
@@ -12,7 +13,7 @@ public enum ActivityType
 
 public class User : BusinessObject
 {
-    private double weight;
+    private double weight = 0;
     public double Weight
     {
         get { return weight; }
@@ -24,7 +25,7 @@ public class User : BusinessObject
                 weight = value;
         }
     }
-    private double height;
+    private double height = 0;
     public double Height
     {
         get { return height; }
@@ -36,7 +37,7 @@ public class User : BusinessObject
                 height = value;
         }
     }
-    private int age;
+    private int age = 0;
     public int Age
     {
         get { return age; }
@@ -58,13 +59,18 @@ public class User : BusinessObject
         Activity = activity;
     }
 
-    public double GetBMR()
+    public double? GetBMR()
     {
+        double eps = 0.00001;
+        if (Weight <= eps || Height <= eps || Age <= 0)
+            return null;
         return 447.593 + 9.247 * Weight + 3.098 * Height - 4.330 * Age;
     }
     
-    public double GetARM()
+    public double? GetARM()
     {
+        if (Activity == ActivityType.Unknown)
+            return null;
         switch (Activity)
         {
             case ActivityType.Low: return 1.2; 
@@ -75,8 +81,27 @@ public class User : BusinessObject
         }
     }
 
-    public int GetDailyCalories()
+    public int? GetDailyCalories()
     {
-        return (int)(GetBMR() * GetARM());
+        double? bmr = GetBMR();
+        double? arm = GetARM();
+        if (bmr == null || arm == null)
+            return null;
+        return (int)(bmr * arm)!;
+    }
+
+    public int GetDailyProtein(int calories)
+    {
+        return (int)(calories * 0.05)!;
+    }
+
+    public int GetDailyFats(int calories)
+    {
+        return (int)(calories * 0.0335)!;
+    }
+
+    public int GetDailyCarbs(int calories)
+    {
+        return (int)(calories * 0.125)!;
     }
 }

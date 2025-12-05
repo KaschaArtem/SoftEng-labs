@@ -55,10 +55,10 @@
                 <StackPanel>
                     <TextBlock Text="Активность" FontWeight="Bold" Margin="0,0,0,5"/>
                     <StackPanel Spacing="5">
-                        <RadioButton Content="Сидячий образ жизни" GroupName="Activity"/>
-                        <RadioButton Content="Умеренная активность" GroupName="Activity"/>
-                        <RadioButton Content="Средняя активность" GroupName="Activity"/>
-                        <RadioButton Content="Высокая активность" GroupName="Activity"/>
+                        <RadioButton Name="RadioLow" Content="Сидячий образ жизни" GroupName="Activity"/>
+                        <RadioButton Name="RadioNormal" Content="Умеренная активность" GroupName="Activity"/>
+                        <RadioButton Name="RadionAverage" Content="Средняя активность" GroupName="Activity"/>
+                        <RadioButton Name="RadioHigh" Content="Высокая активность" GroupName="Activity"/>
                         <TextBlock Text="ARM"/>
                         <TextBox Name="ArmBox" IsReadOnly="True"/>
                     </StackPanel>
@@ -74,7 +74,7 @@
                         <TextBlock Text="Белки"/>
                         <TextBox Name="NormalProteinBox" IsReadOnly="True"/>
                         <TextBlock Text="Жиры"/>
-                        <TextBox Name="NormalFatBox" IsReadOnly="True"/>
+                        <TextBox Name="NormalFatsBox" IsReadOnly="True"/>
                         <TextBlock Text="Углеводы"/>
                         <TextBox Name="NormalCarbsBox" IsReadOnly="True"/>
                     </StackPanel>

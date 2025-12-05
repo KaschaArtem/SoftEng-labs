@@ -12,20 +12,20 @@ public class DataBase
     public List<Category> Categories { get; private set; }
     public DailyRation Ration { get; private set; }
 
-    private DataBase(string connectionString )
+    private DataBase(string connectionString)
     {
         if (DataBase.connectionString == String.Empty)
         {
             var basePath = AppContext.BaseDirectory;
             var fullPath = Path.Combine(basePath, "..", "..", "..", "..", "DataAccess", "products.xml");
-            connectionString = fullPath;
+            DataBase.connectionString = fullPath;
         }
         else
             DataBase.connectionString = connectionString;
         Products = new Dictionary<string, List<Product>>();
         Categories = new List<Category>();
         Ration = new DailyRation();
-        Read(connectionString);
+        Read(DataBase.connectionString);
     }
 
     private void Read(string connectionString)
@@ -59,11 +59,10 @@ public class DataBase
     public static DataBase GetInstance()
     {
         if (instance == null)
-            return new DataBase(connectionString);
+            instance = new DataBase(connectionString);
         return instance;
     }
 
-    // Insert mealtime
     public void Insert(string mealtimeName)
     {
         if (!Ration.MealTimes.ContainsKey(mealtimeName))
@@ -73,20 +72,17 @@ public class DataBase
         }
     }
     
-    // Insert product in mealtime
     public void Insert(string mealtimeName, Product product)
     {
         Ration.MealTimes[mealtimeName].Meal.Add(new Product(product));
     }
 
-    // Delete mealtime
     public void Delete(string mealtimeName)
     {
         Ration.MealTimes.Remove(mealtimeName);
         Ration.MealAmount--;
     }
     
-    // Delete product in mealtime
     public void Delete(string mealtimeName, string productName)
     {
         foreach (Product p in Ration.MealTimes[mealtimeName].Meal)

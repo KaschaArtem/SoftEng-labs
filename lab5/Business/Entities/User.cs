@@ -90,17 +90,17 @@ public class User : BusinessObject
         return (int)(bmr * arm)!;
     }
 
-    public int GetDailyProtein(int calories)
+    public int GetDailyProtein(int? calories)
     {
         return (int)(calories * 0.05)!;
     }
 
-    public int GetDailyFats(int calories)
+    public int GetDailyFats(int? calories)
     {
         return (int)(calories * 0.0335)!;
     }
 
-    public int GetDailyCarbs(int calories)
+    public int GetDailyCarbs(int? calories)
     {
         return (int)(calories * 0.125)!;
     }

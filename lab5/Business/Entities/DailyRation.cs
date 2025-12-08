@@ -28,13 +28,50 @@ public class DailyRation : BusinessObject
         MealTimes["Ужин"] = new MealTime("Ужин");
     }
 
-    public double GetCalories()
+    public Product? GetProduct(string mealTimeName, string productName)
+    {
+        foreach (Product product in MealTimes[mealTimeName].GetProducts())
+        {
+            if (product.Name == productName)
+                return product;
+        }
+        return null;
+    }
+
+    public double GetTotalCalories()
     {
         double calories = 0;
         foreach (string s in MealTimes.Keys)
             foreach (Product p in MealTimes[s].Meal)
                 calories += p.Calories;
         return calories;
+    }
+
+    public double GetTotalProtein()
+    {
+        double protein = 0;
+        foreach (string s in MealTimes.Keys)
+            foreach (Product p in MealTimes[s].Meal)
+                protein += p.Protein;
+        return protein;
+    }
+
+    public double GetTotalFats()
+    {
+        double fats = 0;
+        foreach (string s in MealTimes.Keys)
+            foreach (Product p in MealTimes[s].Meal)
+                fats += p.Fats;
+        return fats;
+    }
+
+    public double GetTotalCarbs()
+    {
+        double carbs = 0;
+        foreach (string s in MealTimes.Keys)
+            foreach (Product p in MealTimes[s].Meal)
+                carbs += p.Carbs;
+        return carbs;
     }
 
     public override string ToString()

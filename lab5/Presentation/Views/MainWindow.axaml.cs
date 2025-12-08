@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Presentation.Views;
@@ -17,7 +16,6 @@ public partial class MainWindow : Window
     private DailyRation ration;
 
     private Product? selectedProduct;
-    private MealTime? selectedMealTime;
 
     private Dictionary<string, TreeViewItem> mealTimeTrees = new Dictionary<string, TreeViewItem>();
 
@@ -101,8 +99,10 @@ public partial class MainWindow : Window
         ProductCategorySearch.TextChanged += OnProductCategorySearchChanged;
         ProductMealTimeSearch.TextChanged += OnProductMealTimeSearchChanged;
 
-        ProductCategoryTree.PointerReleased += OnProductTreeRightClick;
-        ProductMealTimeTree.PointerReleased += OnMealProductTreeRightClick;
+        ProductCategoryTree.PointerReleased += OnProductTreeClick;
+        ProductMealTimeTree.PointerReleased += OnMealProductTreeClick;
+
+        ProductWeightBox.TextChanged += OnProductWeightChanged;
     }
 
     private void OnUserWeightChanged(object? sender, TextChangedEventArgs e)
@@ -185,20 +185,34 @@ public partial class MainWindow : Window
 
     private void UpdateDailyNorm()
     {
-        int? calories = user.GetDailyCalories();
-        if (calories == null)
+        int? totalCalories = user.GetDailyCalories();
+        if (totalCalories == null)
         {
             NormalCaloriesBox.Text = "";
             NormalProteinBox.Text = "";
             NormalFatsBox.Text = "";
             NormalCarbsBox.Text = "";
+
+            DailyCaloriesProgress.Maximum = 0;
+            DailyProteinProgress.Maximum = 0;
+            DailyFatsProgress.Maximum = 0;
+            DailyCarbsProgress.Maximum = 0;
         }
         else
         {
-            NormalCaloriesBox.Text = calories.ToString();
-            NormalProteinBox.Text = user.GetDailyProtein(calories.Value).ToString();
-            NormalFatsBox.Text = user.GetDailyFats(calories.Value).ToString();
-            NormalCarbsBox.Text = user.GetDailyCarbs(calories.Value).ToString();
+            double totalProtein = user.GetDailyProtein(totalCalories);
+            double totalFats = user.GetDailyFats(totalCalories);
+            double totalCarbs = user.GetDailyCarbs(totalCalories);
+
+            NormalCaloriesBox.Text = totalCalories.ToString();
+            NormalProteinBox.Text = totalProtein.ToString();
+            NormalFatsBox.Text = totalFats.ToString();
+            NormalCarbsBox.Text = totalCarbs.ToString();
+
+            DailyCaloriesProgress.Maximum = (int)totalCalories;
+            DailyProteinProgress.Maximum = (int)totalFats;
+            DailyFatsProgress.Maximum = (int)totalFats;
+            DailyCarbsProgress.Maximum = (int)totalCarbs;
         }
     }
 
@@ -287,11 +301,8 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnProductTreeRightClick(object? sender, PointerReleasedEventArgs e)
+    private void OnProductTreeClick(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.InitialPressMouseButton != MouseButton.Right)
-            return;
-
         if (ProductCategoryTree.SelectedItem is not TreeViewItem item)
             return;
 
@@ -300,17 +311,27 @@ public partial class MainWindow : Window
 
         string productName = item.Header!.ToString()!;
 
-        Product product = service.GetProduct(productName);
+        Product newProduct = new Product(service.GetProduct(productName));
+
+        UpdateSelectedProduct(newProduct, false);
+        UpdateProductInfo(newProduct);
+
+        if (e.InitialPressMouseButton != MouseButton.Right)
+            return;
 
         var menu = new ContextMenu();
 
         foreach (var kvp in ration.MealTimes)
         {
+            if (kvp.Value.HasProduct(newProduct.Name))
+                continue;
+
             var menuItem = new MenuItem { Header = $"Добавить в {kvp.Key}" };
             menuItem.Click += (_, __) =>
             {
-                kvp.Value.AddProduct(product);
+                kvp.Value.AddProduct(newProduct);
                 AddProductToMealTimeInfo(kvp.Key, productName);
+                UpdateRationInfo();
             };
             menu.Items.Add(menuItem);
         }
@@ -318,11 +339,8 @@ public partial class MainWindow : Window
         menu.Open(item);
     }
 
-    private void OnMealProductTreeRightClick(object? sender, PointerReleasedEventArgs e)
+    private void OnMealProductTreeClick(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.InitialPressMouseButton != MouseButton.Right)
-            return;
-
         if (ProductMealTimeTree.SelectedItem is not TreeViewItem item)
             return;
 
@@ -332,7 +350,13 @@ public partial class MainWindow : Window
         string productName = item.Header!.ToString()!;
         string currentMeal = mealItem.Header!.ToString()!;
 
-        Product product = service.GetProduct(productName);
+        Product product = ration.GetProduct(currentMeal, productName)!;
+
+        UpdateSelectedProduct(product, true);
+        UpdateProductInfo(product);
+
+        if (e.InitialPressMouseButton != MouseButton.Right)
+            return;
 
         var menu = new ContextMenu();
 
@@ -340,7 +364,7 @@ public partial class MainWindow : Window
 
         foreach (var kvp in ration.MealTimes)
         {
-            if (kvp.Key == currentMeal)
+            if (kvp.Key == currentMeal || kvp.Value.HasProduct(product.Name))
                 continue;
 
             var menuItem = new MenuItem { Header = kvp.Key };
@@ -350,6 +374,7 @@ public partial class MainWindow : Window
                 kvp.Value.AddProduct(product);
                 RemoveProductFromMealTimeInfo(currentMeal, productName);
                 AddProductToMealTimeInfo(kvp.Key, productName);
+                UpdateRationInfo();
 
             };
             moveMenu.Items.Add(menuItem);
@@ -360,12 +385,40 @@ public partial class MainWindow : Window
         {
             ration.MealTimes[currentMeal].RemoveProduct(product);
             RemoveProductFromMealTimeInfo(currentMeal, productName);
+            UpdateRationInfo();
         };
 
         menu.Items.Add(moveMenu);
         menu.Items.Add(delete);
 
         menu.Open(item);
+    }
+
+    private void UpdateSelectedProduct(Product product, bool isFromMealTime)
+    {
+        if (isFromMealTime)
+        {
+            ProductWeightBox.IsReadOnly = false;
+            selectedProduct = product;
+        }
+        else
+        {
+            ProductWeightBox.IsReadOnly = true;
+            selectedProduct = null;
+        }
+    }
+
+    private void UpdateProductInfo(Product product)
+    {
+        ProductNameBox.Text = product.Name;
+        ProductCaloriesBox.Text = Math.Round(product.Calories, 1).ToString();
+        ProductProteinBox.Text = Math.Round(product.Protein, 1).ToString();
+        ProductFatsBox.Text = Math.Round(product.Fats, 1).ToString();
+        ProductCarbsBox.Text = Math.Round(product.Carbs, 1).ToString();
+        if (product.Weight != 0)
+            ProductWeightBox.Text = Math.Round(product.Weight, 1).ToString();
+        else
+            ProductWeightBox.Text = "";
     }
 
     private void AddProductToMealTimeInfo(string key, string productName)
@@ -396,5 +449,42 @@ public partial class MainWindow : Window
                 mealTimeNode.Items.Remove(nodeToRemove);
             }
         }
+    }
+    
+    private void OnProductWeightChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (selectedProduct == null)
+            return;
+
+        if (sender is not TextBox tb)
+            return;
+
+        string text = tb.Text ?? "";
+
+        if (double.TryParse(text, out double weight))
+            selectedProduct!.Weight = weight;
+        else
+            selectedProduct!.Weight = 0;
+
+        UpdateProductInfo(selectedProduct);
+        UpdateRationInfo();
+    }
+
+    private void UpdateRationInfo()
+    {   
+        double totalCalories = Math.Round(ration.GetTotalCalories(), 1);
+        double totalProtein = Math.Round(ration.GetTotalProtein(), 1);
+        double totalFats = Math.Round(ration.GetTotalFats(), 1);
+        double totalCarbs = Math.Round(ration.GetTotalCarbs(), 1);
+
+        DailyCaloriesInfo.Text = totalCalories.ToString();
+        DailyProteinInfo.Text = totalProtein.ToString();
+        DailyFatsInfo.Text = totalFats.ToString();
+        DailyCarbsInfo.Text = totalCarbs.ToString();
+
+        DailyCaloriesProgress.Value = totalCalories;
+        DailyProteinProgress.Value = totalProtein;
+        DailyFatsProgress.Value = totalFats;
+        DailyCarbsProgress.Value = totalCarbs;
     }
 }

@@ -45,9 +45,9 @@ public class DataBase
                 Product product = new Product();
                 product.Name = xproduct.Element("Name")!.Value;
                 product.Weight = Convert.ToDouble(xproduct.Element("Gramms")!.Value);
-                product.Protein = Convert.ToDouble(xproduct.Element("Protein")!.Value);
-                product.Fats = Convert.ToDouble(xproduct.Element("Fats")!.Value);
-                product.Carbs = Convert.ToDouble(xproduct.Element("Carbs")!.Value);
+                product.Protein100 = Convert.ToDouble(xproduct.Element("Protein")!.Value) / 100.0;
+                product.Fats100 = Convert.ToDouble(xproduct.Element("Fats")!.Value) / 100.0;
+                product.Carbs100 = Convert.ToDouble(xproduct.Element("Carbs")!.Value) / 100.0;
                 product.Calories100 = Convert.ToDouble(xproduct.Element("Calories")!.Value);
                 product.Category = category;
                 categoryProducts.Add(product);

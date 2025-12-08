@@ -38,4 +38,14 @@ public class MealTime : BusinessObject
             calories += product.Calories;
         return calories;
     }
+
+    public bool HasProduct(string productName)
+    {
+        foreach (var product in Meal)
+        {
+            if (product.Name.Equals(productName))
+                return true;
+        }
+        return false;
+    }
 }
